@@ -17,7 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # ⚠️ 러너 기본 Node 는 20 인데 Astro 는 >=22.12 를 요구한다. 안 박아두면 빌드가 죽는다.
       - uses: withastro/action@v3
+        with:
+          node-version: 22
 
   deploy:
     needs: build
