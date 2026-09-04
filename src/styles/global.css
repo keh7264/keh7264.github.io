@@ -87,6 +87,19 @@ input {
 }
 table {
 	width: 100%;
+	border-collapse: collapse;
+	margin: 0 0 1.5em 0;
+}
+th,
+td {
+	border: 1px solid rgb(var(--gray-light));
+	padding: 0.5em 0.7em;
+	text-align: left;
+	vertical-align: top;
+}
+th {
+	background-color: rgba(var(--gray-light), 45%);
+	font-weight: 700;
 }
 img {
 	max-width: 100%;
@@ -147,8 +160,17 @@ hr {
 	.prose p {
 		margin-bottom: 1.4em;
 	}
+	/* 좁은 화면에서 표가 잘리지 않게 가로 스크롤을 허용한다 */
 	table {
 		font-size: 0.9em;
+		display: block;
+		width: max-content;
+		max-width: 100%;
+		overflow-x: auto;
+	}
+	th,
+	td {
+		padding: 0.4em 0.6em;
 	}
 }
 
