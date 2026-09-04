@@ -97,10 +97,12 @@ code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
 	border-radius: 2px;
+	font-size: 0.9em;
 }
 pre {
 	padding: 1.5em;
 	border-radius: 8px;
+	font-size: 0.9em;
 }
 pre > code {
 	all: unset;
@@ -116,27 +118,37 @@ hr {
 	border-top: 1px solid rgb(var(--gray-light));
 }
 @media (max-width: 720px) {
+	/* Bear Blog 기본 배율은 데스크톱 기준이라 모바일에서 전부 한 단계씩 크다 */
 	body {
-		font-size: 18px;
+		font-size: 16px;
 	}
 	main {
 		padding: 1em;
 	}
-	/* 데스크톱 배율(h1 3.052em ≒ 55px)은 모바일에서 너무 크다 */
 	h1 {
-		font-size: 2em;
+		font-size: 1.8em;
 	}
 	h2 {
-		font-size: 1.6em;
+		font-size: 1.4em;
 	}
 	h3 {
-		font-size: 1.35em;
+		font-size: 1.2em;
 	}
 	h4 {
-		font-size: 1.15em;
+		font-size: 1.05em;
 	}
 	blockquote {
-		font-size: 1.1em;
+		font-size: 1.05em;
+	}
+	pre {
+		font-size: 0.85em;
+		padding: 1em;
+	}
+	.prose p {
+		margin-bottom: 1.4em;
+	}
+	table {
+		font-size: 0.9em;
 	}
 }
 
