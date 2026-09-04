@@ -117,12 +117,26 @@ hr {
 }
 @media (max-width: 720px) {
 	body {
-	word-break: keep-all;   /* 한글은 단어 중간에서 끊기면 읽기 나쁘다 */
-	overflow-wrap: break-word;
 		font-size: 18px;
 	}
 	main {
 		padding: 1em;
+	}
+	/* 데스크톱 배율(h1 3.052em ≒ 55px)은 모바일에서 너무 크다 */
+	h1 {
+		font-size: 2em;
+	}
+	h2 {
+		font-size: 1.6em;
+	}
+	h3 {
+		font-size: 1.35em;
+	}
+	h4 {
+		font-size: 1.15em;
+	}
+	blockquote {
+		font-size: 1.1em;
 	}
 }
 
