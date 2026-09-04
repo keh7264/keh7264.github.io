@@ -1,12 +1,24 @@
 ---
 title: 'AbortController 취소 패턴'
-description: 'signal 은 내가 정의하는 함수가 아니라 AbortController 인스턴스가 들고 있는 프로퍼티다. 리모컨 하나로 리스너·요청·타이머를 한꺼번에 끄는 구조.'
+description: '리스너 셋과 타이머 하나와 진행 중인 요청을 정리 코드에서 하나씩 되돌리다 보면 꼭 하나를 빠뜨린다. 어디까지 abort() 한 줄로 줄어드는지의 경계.'
 pubDate: 'Sep 04 2026'
 ---
 
-`signal` 은 내가 정의하는 함수가 아니라, `AbortController` 인스턴스가 들고 있는 객체 프로퍼티다. 리모컨 하나로 리스너·요청·타이머를 한꺼번에 끄는 구조다.
+정리 코드가 이 정도로 길어지면 하나쯤은 잊는다.
 
-## 구조
+```js
+destroy() {
+  window.removeEventListener("resize", this.onResize);
+  window.removeEventListener("scroll", this.onScroll);
+  document.removeEventListener("keydown", this.onKey);
+  clearInterval(this.timer);
+  this.req?.abort();
+}
+```
+
+앞의 세 줄은 `ac.abort()` 한 줄로 줄어든다. 뒤의 두 줄은 안 줄어든다. 그 경계를 아는 게 이 패턴의 절반이다.
+
+## 컨트롤러 하나에 리모컨과 수신기가 같이 있다
 
 `new AbortController()` 하나에 발동하는 쪽(`abort()`)과 전달받는 쪽(`signal`)이 같이 들어 있다. 브라우저 내장 API라 설치도 import도 없다.
 
@@ -18,16 +30,16 @@ ac.abort()  // 취소 발동 (메서드)
 ac.abort(new Error("사용자 이탈")); // 사유를 실어 보낼 수도 있다
 ```
 
-예제에서 자주 보이는 `const { signal } = ac;` 는 새 함수를 만드는 게 아니라 구조 분해 할당이다. `const signal = ac.signal;` 과 완전히 같다.
+`signal` 은 내가 정의하는 함수가 아니다. 인스턴스가 들고 있는 프로퍼티다. 예제에서 자주 보이는 `const { signal } = ac;` 도 새 함수를 만드는 게 아니라 그냥 구조 분해 할당이라, `const signal = ac.signal;` 과 완전히 같다.
 
 | 이름 | 역할 | 누가 들고 있나 |
 | --- | --- | --- |
 | `controller` | 취소를 발동한다 | 정리 책임이 있는 쪽: 컴포넌트, 훅, 서비스 |
 | `signal` | 취소를 전달받는다 | 등록하는 API 쪽: `addEventListener`, `fetch`, 내가 만든 함수 |
 
-리모컨 하나에 수신기를 여러 개 물려두고, 버튼 한 번에 전부 끈다.
+리모컨 하나에 수신기를 여러 개 물려두고, 버튼 한 번에 전부 끄는 구조다.
 
-## signal 을 받아주는 API와 아닌 API
+## 취소가 저절로 전파되는 범위
 
 | API | 넘기는 자리 | 취소되면 |
 | --- | --- | --- |
@@ -38,7 +50,7 @@ ac.abort(new Error("사용자 이탈")); // 사유를 실어 보낼 수도 있�
 | `setTimeout` / `setInterval` | ❌ 없음 | 직접 `clearTimeout` 을 연결해야 한다 |
 | 서드파티 SDK 대부분 | ❌ 없음 | 각자의 `off()` / `destroy()` 를 불러야 한다 |
 
-즉 취소가 저절로 전파되는 범위는 `signal` 을 받아주는 API까지다. 나머지는 `abort` 이벤트에 직접 연결해야 한다.
+`signal` 을 받아주는 API까지가 공짜다. 나머지는 `abort` 이벤트에 직접 연결해야 한다. 맨 위 코드에서 줄어들지 않던 두 줄이 정확히 이 표의 아래 두 칸이다.
 
 ## 리스너 여러 개를 한 줄로 정리한다
 
@@ -80,11 +92,11 @@ async function load(signal) {
 
 화면을 떠날 때 `ac.abort()` 한 번이면 리스너 해제와 요청 취소가 동시에 일어난다. 다만 취소된 fetch 는 reject 로 끝나므로, 걸러내지 않으면 "이미 떠난 화면"의 에러가 로그에 계속 쌓인다.
 
-> **주의.** `AbortSignal.timeout()` 으로 끊긴 요청의 에러 이름은 `AbortError` 가 아니라 `TimeoutError` 다. 시간 초과를 사용자 취소와 구분해야 한다면 이름으로 갈라야 한다.
+이름으로 거를 때 하나 주의할 게 있다. `AbortSignal.timeout()` 으로 끊긴 요청의 에러 이름은 `AbortError` 가 아니라 `TimeoutError` 다. 시간 초과와 사용자 취소를 구분해야 한다면 여기서 갈린다.
 
 ## 내가 만든 함수도 signal 을 받을 수 있다
 
-확인 방법은 두 가지다. 지금 이미 취소됐는지 보는 플래그와, 앞으로 취소될 때 알림을 받는 이벤트다.
+확인 방법은 두 가지다. 지금 이미 취소됐는지 보는 플래그와, 앞으로 취소될 때 알림을 받는 이벤트.
 
 ```js
 // ① 플래그 — 반복문·루프 안에서
@@ -107,7 +119,7 @@ function step(signal) {
 }
 ```
 
-**순서 함정.** 이미 abort 된 signal 에 `"abort"` 리스너를 붙이면 영원히 호출되지 않는다. 이벤트가 이미 지나갔기 때문이다. 늦게 합류하는 코드는 플래그를 먼저 봐야 한다.
+여기 순서 함정이 하나 있다. 이미 abort 된 signal 에 `"abort"` 리스너를 붙이면 영원히 호출되지 않는다. 이벤트가 이미 지나갔기 때문이다. 늦게 합류하는 코드는 플래그를 먼저 봐야 한다.
 
 ```js
 if (signal.aborted) cleanup();
@@ -132,11 +144,11 @@ await fetch(url, { signal });
 
 ## 걸리기 쉬운 것들
 
-- **일회용이다.** abort 한 컨트롤러는 되살릴 수 없다. 마운트할 때마다 새로 만든다. 필드에 하나 만들어 재사용하면 두 번째 마운트가 즉시 취소된 상태로 시작한다
-- **capture 는 여전히 별개 옵션이다.** `{ capture: true, signal }` 처럼 같이 쓴다
-- **취소 에러를 무조건 삼키면 안 된다.** catch 에서 이름을 확인하고 `AbortError` 만 조용히 넘긴다. 전부 삼키면 진짜 네트워크 실패도 같이 묻힌다
-- **React StrictMode(개발 모드)는 effect 를 두 번 실행한다.** 첫 정리에서 abort 가 걸려 "요청이 취소됐다"는 로그가 보이는데, 개발 환경 한정 동작이라 버그가 아니다
-- **signal 을 안 받는 API 는 자동으로 멈추지 않는다.** 타이머·SDK 구독은 `abort` 이벤트에 직접 연결한다
+컨트롤러는 일회용이다. abort 한 컨트롤러는 되살릴 수 없으니 마운트할 때마다 새로 만들어야 한다. 필드에 하나 만들어 재사용하면 두 번째 마운트가 이미 취소된 상태로 시작한다.
+
+취소 에러를 무조건 삼키는 것도 흔한 실수다. catch 에서 이름을 확인하고 `AbortError` 만 조용히 넘겨야 진짜 네트워크 실패가 같이 묻히지 않는다.
+
+나머지 두 개는 알아두면 놀라지 않는 것들이다. capture 는 여전히 별개 옵션이라 `{ capture: true, signal }` 처럼 같이 쓴다. React StrictMode(개발 모드)는 effect 를 두 번 실행하므로 첫 정리에서 abort 가 걸려 "요청이 취소됐다" 로그가 보이는데, 개발 환경 한정 동작이라 버그가 아니다.
 
 지원 범위는 사실상 신경 쓰지 않아도 된다. 리스너의 `signal` 옵션은 Chrome 90+ / Safari 15+, `AbortSignal.timeout` 과 `any` 만 조금 늦다(Safari 16+ / 17.4+).
 
@@ -166,14 +178,6 @@ ngOnInit()    { window.addEventListener("resize", this.onResize, { signal: this.
 ngOnDestroy() { this.ac.abort(); }
 ```
 
-정리 코드에서 리스너·요청·타이머를 하나씩 되돌리는 대신 `abort()` 한 줄만 남는다. 정리 대상이 셋 이상이면 거의 항상 이 쪽이 낫다. 나중에 리스너를 하나 더 추가할 때 정리 코드를 고치는 걸 잊어도 새는 곳이 생기지 않기 때문이다.
+붙일 때 실제로 확인한 건 다섯 가지였다. 컨트롤러를 수명 주기마다 새로 만드는가, 정리 지점에서 `abort()` 를 부르는가, 취소 에러를 이름으로 거르는가, signal 을 안 받는 타이머와 SDK 에 `abort` 이벤트를 연결했는가, 늦게 합류하는 코드가 `signal.aborted` 를 먼저 보는가.
 
-## 도입할 때 훑는 목록
-
-- 컨트롤러를 수명 주기마다 새로 만드는가 (재사용 금지)
-- 정리 지점에서 `abort()` 를 부르는가
-- 취소 에러를 이름으로 걸러내는가: `AbortError`, 시간 초과면 `TimeoutError`
-- signal 을 안 받는 API(타이머·SDK)에 `abort` 이벤트를 연결했는가
-- 늦게 합류하는 코드가 `signal.aborted` 를 먼저 확인하는가
-
-관련 글: [리스너가 해제되지 않는 이유](/blog/event-listener-cleanup/) — 참조 동일성 편
+정리 대상이 둘일 때는 이 패턴이 오히려 번거롭다. 값이 나오는 건 셋부터다. 나중에 리스너를 하나 더 추가할 때 정리 코드를 고치는 걸 잊어도 새는 곳이 생기지 않기 때문이다.
