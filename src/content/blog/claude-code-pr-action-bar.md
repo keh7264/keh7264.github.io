@@ -69,7 +69,7 @@ overflow-x: auto;
 .band .sk:hover { background: var(--pink); }
 .band .band .c-jira { color: #4c9aff; }
 .band .jira:hover { background: #4c9aff; }
-.band-hint { margin: 8px 0 0; font-size: 0.85rem; color: var(--muted, inherit); }
+.band-hint { margin: 8px 0 1.5em; font-size: 0.85rem; color: var(--muted, inherit); }
 .band.mini { padding: 10px 14px; font-size: 12.5px; }
 .prompt { margin-top: 8px; border-top: 1px solid #2a323d; border-bottom: 1px solid #2a323d; color: var(--term-dim); }
 .band .c-mint { color: var(--mint); }

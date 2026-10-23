@@ -6,6 +6,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://keh7264.github.io',
   integrations: [mdx(), sitemap()],
+  // 홈이 곧 글 목록이라 /blog 목록 페이지는 홈으로 보낸다
+  redirects: { '/blog': '/' },
   markdown: {
     // 코드 블록 하이라이팅 — VS Code 와 같은 엔진(Shiki)
     shikiConfig: { theme: 'github-dark', wrap: true },
