@@ -7,8 +7,8 @@ heroImage: '../../assets/pr-action-bar.png'
 
 <style>
 .term-bar { background:#121a17; color:#e6e6e6; padding:1.1em 1.3em; border-radius:12px; line-height:1.9; overflow-x:auto; }
+.st { background:#121a17; padding:0.1em 0.45em; border-radius:4px; font-family:ui-monospace, Menlo, monospace; font-weight:700; font-size:0.9em; white-space:nowrap; }
 .term-bar code { background:none; color:inherit; padding:0; font-size:0.9em; }
-.swatch { display:inline-block; width:0.85em; height:0.85em; border-radius:3px; margin-right:0.35em; vertical-align:-0.08em; border:1px solid rgba(0,0,0,.15); }
 </style>
 
 프론트엔드 레포 세 개를 오가며 리뷰를 하다 보면 PR마다 상태가 다 다르다. 어떤 건 리뷰를 다 읽어 놓고 코멘트를 안 달았고, 어떤 건 작성자가 내 코멘트에 답을 달았고, 내 PR 하나는 승인을 받았는데 스레드가 안 닫혀서 머지가 막혀 있다. 이런 변화는 GitHub와 연결된 Slack 알림으로 오는데, 다른 메시지에 섞여 지나가 버리는 일이 많았다. 놓칠까 봐 결국 GitHub PR 목록을 수시로 열어 하나씩 확인하게 된다.
@@ -338,13 +338,13 @@ PR 하나에 상태는 하나만 붙인다. 위에서부터 먼저 걸리는 것
 <strong>Team PR (남의 PR)</strong>
 | 상태 | 조건 |
 |---|---|
-| Re-review | 내가 시작했거나 답글을 단 미해결 스레드에 다른 사람이 마지막으로 답함. 봇이 답글 리뷰를 미리 돌려 둔다 |
-| Approved | 내 마지막 승인·변경 요청 리뷰가 승인. 그 뒤에 단 스레드 답글(COMMENTED)은 무시한다 |
-| Updated | 아무도 답하지 않았지만 내 리뷰 뒤 코드 커밋이 올라옴. base 머지 커밋만 있으면 제외한다 |
-| Awaiting changes | 내가 코멘트를 남겼고 답글도 새 코드 커밋도 없음(리뷰 대신 일반 코멘트만 남긴 경우 포함) |
-| Approved by others | 내 리뷰는 없는데 다른 사람이 이미 승인함(자동 리뷰 전이어도). 승인 1개면 머지할 수 있어서 내 리뷰는 선택이다 |
-| Reviewing | 자동 리뷰 대기·진행 중. 새로 올라온 PR이 리뷰가 끝나기 전에도 바로 보인다 |
-| Needs review | 내 리뷰도 다른 사람 승인도 없음. 로컬 리뷰가 끝나 세션이 있는 PR과, 자동 리뷰를 켜기 전부터 열려 있었거나 자동 리뷰가 실패해서 세션이 없는 PR을 함께 묶는다. 앞쪽은 누르면 리뷰 세션이, 뒤쪽은 PR 페이지가 열린다 |
+| <span class="st" style="color:#FFC107">Re-review</span> | 내가 시작했거나 답글을 단 미해결 스레드에 다른 사람이 마지막으로 답함. 봇이 답글 리뷰를 미리 돌려 둔다 |
+| <span class="st" style="color:#999999">Approved</span> | 내 마지막 승인·변경 요청 리뷰가 승인. 그 뒤에 단 스레드 답글(COMMENTED)은 무시한다 |
+| <span class="st" style="color:#48968C">Updated</span> | 아무도 답하지 않았지만 내 리뷰 뒤 코드 커밋이 올라옴. base 머지 커밋만 있으면 제외한다 |
+| <span class="st" style="color:#999999">Awaiting changes</span> | 내가 코멘트를 남겼고 답글도 새 코드 커밋도 없음(리뷰 대신 일반 코멘트만 남긴 경우 포함) |
+| <span class="st" style="color:#999999">Approved by others</span> | 내 리뷰는 없는데 다른 사람이 이미 승인함(자동 리뷰 전이어도). 승인 1개면 머지할 수 있어서 내 리뷰는 선택이다 |
+| <span class="st" style="color:#4782C8">Reviewing</span> | 자동 리뷰 대기·진행 중. 새로 올라온 PR이 리뷰가 끝나기 전에도 바로 보인다 |
+| <span class="st" style="color:#B1B9F9">Needs review</span> | 내 리뷰도 다른 사람 승인도 없음. 로컬 리뷰가 끝나 세션이 있는 PR과, 자동 리뷰를 켜기 전부터 열려 있었거나 자동 리뷰가 실패해서 세션이 없는 PR을 함께 묶는다. 앞쪽은 누르면 리뷰 세션이, 뒤쪽은 PR 페이지가 열린다 |
 
 
 열린 남의 PR은 Draft만 빼고 전부 이 중 하나로 띠에 올라온다. 자동 리뷰 결과가 없는 PR도 마지막 칸(Needs review)으로 띄운다. 자동 리뷰를 켜기 전부터 열려 있던 PR이 아무도 승인하지 않은 채 빠지지 않게 하려는 것이다. 로컬 리뷰가 끝난 PR과 아닌 PR을 상태로 나누지 않는 것도 같은 이유다. 어느 쪽이든 할 일은 "내가 리뷰한다" 하나다. 세션이 열리는지 브라우저가 열리는지는 PR 번호에 마우스를 올렸을 때 색(주황·흰색)으로 구분한다.
@@ -354,16 +354,16 @@ Re-review와 Updated는 나눈다. 봇은 새 커밋만으로는 다시 리뷰�
 <strong>My PR (내 PR)</strong>
 | 상태 | 조건 |
 |---|---|
-| Reply | 미해결 스레드의 마지막 코멘트가 내 것이 아님(봇이 남긴 스레드 포함) |
-| Resolve conflicts | <code>mergeable == CONFLICTING</code> |
-| Fix CI | 체크 결과가 <code>FAILURE</code> 또는 <code>ERROR</code> |
-| Check merge | 릴리스 머지 PR이 충돌·CI 문제 없이도 머지되지 않고 남아 있음 |
-| Awaiting re-review | 미해결 스레드가 있고, 전부 내가 마지막으로 답함 |
-| Address changes | <code>reviewDecision == CHANGES_REQUESTED</code> |
-| Awaiting approval | 승인 0개 |
+| <span class="st" style="color:#FFC107">Reply</span> | 미해결 스레드의 마지막 코멘트가 내 것이 아님(봇이 남긴 스레드 포함) |
+| <span class="st" style="color:#FF6B80">Resolve conflicts</span> | <code>mergeable == CONFLICTING</code> |
+| <span class="st" style="color:#FF6B80">Fix CI</span> | 체크 결과가 <code>FAILURE</code> 또는 <code>ERROR</code> |
+| <span class="st" style="color:#FFC107">Check merge</span> | 릴리스 머지 PR이 충돌·CI 문제 없이도 머지되지 않고 남아 있음 |
+| <span class="st" style="color:#999999">Awaiting re-review</span> | 미해결 스레드가 있고, 전부 내가 마지막으로 답함 |
+| <span class="st" style="color:#FF6B80">Address changes</span> | <code>reviewDecision == CHANGES_REQUESTED</code> |
+| <span class="st" style="color:#999999">Awaiting approval</span> | 승인 0개 |
 | CI running | 체크가 <code>PENDING</code> |
-| Merge | 위에 하나도 안 걸림 = 승인 1개 + 테스트 통과 + 미해결 스레드 0개 |
-| Draft | 내 PR이 Draft. 남의 Draft는 아직 리뷰할 단계가 아니라 띠에 올리지 않는다 |
+| <span class="st" style="color:#4EBA65">Merge</span> | 위에 하나도 안 걸림 = 승인 1개 + 테스트 통과 + 미해결 스레드 0개 |
+| <span class="st" style="color:#999999">Draft</span> | 내 PR이 Draft. 남의 Draft는 아직 리뷰할 단계가 아니라 띠에 올리지 않는다 |
 
 
 <code>github-actions</code> 같은 봇 계정의 코멘트는 사람 답글로 치지 않는다. 내가 승인한 PR은 할 일은 없지만, 머지될 때까지 회색 Approved로 남겨 둔다.
@@ -451,23 +451,23 @@ on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
 색은 괄호와 상태 이름에만 넣었다. hex는 Claude Code 기본 다크 테마 기준이다.
 | 색 | 테마 키 | hex (다크) | 상태 |
 |---|---|---|---|
-| <span style="color:#FF6B80;font-weight:700">빨강</span> | <code>error</code> | <span class="swatch" style="background:#FF6B80"></span><code>#FF6B80</code> | Resolve conflicts, Fix CI, Address changes (막힘) |
-| <span style="color:#FFC107;font-weight:700">노랑</span> | <code>warning</code> | <span class="swatch" style="background:#FFC107"></span><code>#FFC107</code> | Reply, Re-review, Check merge (답글이 달림·확인 차례) |
-| <span style="color:#B1B9F9;font-weight:700">연보라 파랑</span> | <code>suggestion</code> | <span class="swatch" style="background:#B1B9F9"></span><code>#B1B9F9</code> | Needs review (리뷰할 차례) |
-| <span style="color:#48968C;font-weight:700">청록</span> | <code>planMode</code> | <span class="swatch" style="background:#48968C"></span><code>#48968C</code> | Updated (답 없이 코드 수정이 올라옴) |
-| <span style="color:#4782C8;font-weight:700">파랑</span> | <code>ide</code> | <span class="swatch" style="background:#4782C8"></span><code>#4782C8</code> | Reviewing (자동 리뷰 진행 중) |
-| <span style="color:#4EBA65;font-weight:700">초록</span> | <code>success</code> | <span class="swatch" style="background:#4EBA65"></span><code>#4EBA65</code> | Merge |
-| <span style="color:#999999;font-weight:700">회색</span> | <code>inactive</code> | <span class="swatch" style="background:#999999"></span><code>#999999</code> | Awaiting …, Approved, Approved by others, Draft (남의 차례·끝남·참고) |
+| 빨강 | <code>error</code> | <code>#FF6B80</code> | Resolve conflicts, Fix CI, Address changes (막힘) |
+| 노랑 | <code>warning</code> | <code>#FFC107</code> | Reply, Re-review, Check merge (답글이 달림·확인 차례) |
+| 연보라 파랑 | <code>suggestion</code> | <code>#B1B9F9</code> | Needs review (리뷰할 차례) |
+| 청록 | <code>planMode</code> | <code>#48968C</code> | Updated (답 없이 코드 수정이 올라옴) |
+| 파랑 | <code>ide</code> | <code>#4782C8</code> | Reviewing (자동 리뷰 진행 중) |
+| 초록 | <code>success</code> | <code>#4EBA65</code> | Merge |
+| 회색 | <code>inactive</code> | <code>#999999</code> | Awaiting …, Approved, Approved by others, Draft (남의 차례·끝남·참고) |
 
 
 이 색들은 테마 키라서 라이트 테마 등에서는 다른 값으로 바뀐다. 라벨과 링크 색은 테마 키에 없어서 hex를 직접 넣었다.
 | 요소 | hex |
 |---|---|
-| <code style="color:#FF6FAE">* Skills</code> 라벨 | <span class="swatch" style="background:#FF6FAE"></span><code>#FF6FAE</code> (핑크) |
-| <code style="color:#3EB489">* My PR</code> 라벨 | <span class="swatch" style="background:#3EB489"></span><code>#3EB489</code> (민트) |
-| <code style="color:#5BB8F5">* Team PR</code> 라벨 | <span class="swatch" style="background:#5BB8F5"></span><code>#5BB8F5</code> (하늘색) |
-| <code style="color:#A66CFF">* This PR</code> 라벨 | <span class="swatch" style="background:#A66CFF"></span><code>#A66CFF</code> (보라) |
-| <span style="color:#4C9AFF;font-weight:700">이슈 링크 <code>[ SHOP-482 ]</code></span> | <span class="swatch" style="background:#4C9AFF"></span><code>#4C9AFF</code> (파랑) |
+| <code>* Skills</code> 라벨 | <code>#FF6FAE</code> (핑크) |
+| <code>* My PR</code> 라벨 | <code>#3EB489</code> (민트) |
+| <code>* Team PR</code> 라벨 | <code>#5BB8F5</code> (하늘색) |
+| <code>* This PR</code> 라벨 | <code>#A66CFF</code> (보라) |
+| 이슈 링크 <code>[ SHOP-482 ]</code> | <code>#4C9AFF</code> (파랑) |
 
 
 #### 누르면 어디로 가나
