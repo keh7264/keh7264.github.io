@@ -361,7 +361,7 @@ Re-review와 Updated는 나눈다. 봇은 새 커밋만으로는 다시 리뷰�
 | <span class="st" style="color:#999999">Awaiting re-review</span> | 미해결 스레드가 있고, 전부 내가 마지막으로 답함 |
 | <span class="st" style="color:#FF6B80">Address changes</span> | <code>reviewDecision == CHANGES_REQUESTED</code> |
 | <span class="st" style="color:#999999">Awaiting approval</span> | 승인 0개 |
-| CI running | 체크가 <code>PENDING</code> |
+| <span class="st" style="color:#999999">CI running</span> | 체크가 <code>PENDING</code> |
 | <span class="st" style="color:#4EBA65">Merge</span> | 위에 하나도 안 걸림 = 승인 1개 + 테스트 통과 + 미해결 스레드 0개 |
 | <span class="st" style="color:#999999">Draft</span> | 내 PR이 Draft. 남의 Draft는 아직 리뷰할 단계가 아니라 띠에 올리지 않는다 |
 
