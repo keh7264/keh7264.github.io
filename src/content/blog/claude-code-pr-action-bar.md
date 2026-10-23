@@ -23,10 +23,111 @@ heroImage: '../../assets/pr-action-bar.png'
 
 완성하면 입력창 위가 이렇게 된다.
 
-<pre class="term-bar"><code><span style="color:#FF6FAE;font-weight:700">* Skills</span>   <span style="color:#FF6FAE;font-weight:700">[</span> /code-review <span style="color:#FF6FAE;font-weight:700">]</span>  <span style="color:#FF6FAE;font-weight:700">[</span> /simplify <span style="color:#FF6FAE;font-weight:700">]</span>  <span style="color:#FF6FAE;font-weight:700">[</span> /pr <span style="color:#FF6FAE;font-weight:700">]</span>  <span style="color:#FF6FAE;font-weight:700">[</span> /pr-to-jira <span style="color:#FF6FAE;font-weight:700">]</span>  <span style="color:#FF6FAE;font-weight:700">[</span> /wiki-sync <span style="color:#FF6FAE;font-weight:700">]</span>  <span style="color:#999999">↻ 12:15</span>
-<span style="color:#3EB489;font-weight:700">* My PR</span>    <span style="color:#999999;font-weight:700">[</span> <span style="color:#999999;font-weight:700">Awaiting re-review</span> repo-a#1234 <span style="color:#999999;font-weight:700">]</span>  <span style="color:#999999;font-weight:700">[</span> <span style="color:#999999;font-weight:700">Awaiting approval</span> repo-b#562 <span style="color:#999999;font-weight:700">]</span>  <span style="color:#999999;font-weight:700">[</span> <span style="color:#999999;font-weight:700">Draft</span> repo-c#88 <span style="color:#999999;font-weight:700">]</span>
-<span style="color:#5BB8F5;font-weight:700">* Team PR</span>  <span style="color:#B1B9F9;font-weight:700">[</span> <span style="color:#B1B9F9;font-weight:700">Needs review</span> <u>repo-a#1235</u> <span style="color:#B1B9F9;font-weight:700">]</span>  <span style="color:#999999;font-weight:700">[</span> <span style="color:#999999;font-weight:700">Awaiting changes</span> repo-b#560 <span style="color:#999999;font-weight:700">]</span>
-<span style="color:#A66CFF;font-weight:700">* This PR</span>  <span style="color:#B1B9F9;font-weight:700">[</span> <span style="color:#B1B9F9;font-weight:700">Needs review</span> <span style="color:#B1B9F9;font-weight:700">]</span>  <u>feat: 결제 완료 화면 안내 문구 수정 (#1235)</u>  <span style="color:#4C9AFF;font-weight:700">[</span> <span style="color:#4C9AFF;font-weight:700">SHOP-482</span> <span style="color:#4C9AFF;font-weight:700">]</span>  리뷰 파일</code></pre>
+<style>
+.band {
+--term-bg: #12161d;
+--term-ink: #dfe5ee;
+--term-dim: #7f8a99;
+--term-claude: #d97757;
+--mint: #3eb489;
+--sky: #5bb8f5;
+--pink: #ff6fae;
+--violet: #a66cff;
+--st-gray: #999999;
+--st-blue: #b1b9f9;
+--st-yellow: #ffc107;
+--st-red: #ff6b80;
+--st-green: #4eba65;
+--st-purple: #af87ff;
+--st-teal: #48968c;
+--st-steel: #4782c8;
+--font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+.band {
+background: var(--term-bg);
+color: var(--term-ink);
+border-radius: 10px;
+padding: 16px 18px;
+font-family: var(--font-mono);
+font-size: 13px;
+line-height: 1.9;
+overflow-x: auto;
+}
+.band-row { display: flex; white-space: nowrap; }
+.band-label { width: 11ch; flex-shrink: 0; font-weight: 700; }
+.band-items { display: flex; gap: 2ch; }
+.b { font-weight: 700; }
+.n { font-weight: 400; color: var(--term-ink); }
+.u { text-decoration: underline; text-underline-offset: 3px; }
+.dim { color: var(--term-dim); }
+/ 실제 띠의 hover 를 흉내 낸다. 터미널처럼 hover 색이 배경으로 깔리고 글자는 검게 반전된다.
+세션으로 열리면 Claude 주황, 브라우저면 흰색, Skills·↻ 는 핑크 */
+.band .hv { cursor: pointer; }
+.band .hv:hover { color: #000000; font-weight: 700; }
+.band .hv[data-opens="session"]:hover { background: var(--term-claude); }
+.band .hv[data-opens="url"]:hover { background: #ffffff; }
+.band .sk:hover { background: var(--pink); }
+.band .band .c-jira { color: #4c9aff; }
+.band .jira:hover { background: #4c9aff; }
+.band-hint { margin: 8px 0 0; font-size: 0.85rem; color: var(--muted, inherit); }
+.band.mini { padding: 10px 14px; font-size: 12.5px; }
+.prompt { margin-top: 8px; border-top: 1px solid #2a323d; border-bottom: 1px solid #2a323d; color: var(--term-dim); }
+.band .c-mint { color: var(--mint); }
+.band .c-sky { color: var(--sky); }
+.band .c-pink { color: var(--pink); }
+.band .c-violet { color: var(--violet); }
+.band .c-gray { color: var(--st-gray); }
+.band .c-blue { color: var(--st-blue); }
+.band .c-yellow { color: var(--st-yellow); }
+.band .c-red { color: var(--st-red); }
+.band .c-purple { color: var(--st-purple); }
+.band .c-teal { color: var(--st-teal); }
+.band .c-steel { color: var(--st-steel); }
+.band .c-green { color: var(--st-green); }
+.band .c-ink { color: var(--term-ink); }
+
+</style>
+
+<div class="band" aria-label="입력창 위 띠 화면 예시">
+<div class="band-row">
+<span class="band-label c-pink">* Skills</span>
+<span class="band-items">
+<span><span class="b c-pink">[</span> <span class="hv sk" title="누르면 /code-review 실행">/code-review</span> <span class="b c-pink">]</span></span>
+<span><span class="b c-pink">[</span> <span class="hv sk" title="누르면 /simplify 실행">/simplify</span> <span class="b c-pink">]</span></span>
+<span><span class="b c-pink">[</span> <span class="hv sk" title="누르면 /pr 실행">/pr</span> <span class="b c-pink">]</span></span>
+<span><span class="b c-pink">[</span> <span class="hv sk" title="누르면 /pr-to-jira 실행">/pr-to-jira</span> <span class="b c-pink">]</span></span>
+<span><span class="b c-pink">[</span> <span class="hv sk" title="누르면 잠자기 방지 30분 추가(setup 에서 켰을 때)">caffeinate +30m</span> <span class="b c-pink">]</span></span>
+<span class="dim hv sk" title="누르면 정규 폴링 1회 + 상태 다시 가져오기">↻ 12:15</span>
+</span>
+</div>
+<div class="band-row">
+<span class="band-label c-mint">* My PR</span>
+<span class="band-items">
+<span class="c-green b">[ Merge <span class="n hv" data-opens="url" title="누르면 브라우저(PR 페이지)">repo-a#1233</span> ]</span>
+<span class="c-gray b">[ Awaiting approval <span class="n hv" data-opens="session" title="누르면 Claude 세션(리뷰 세션 탭·작업하던 탭)">repo-b#562</span> ]</span>
+<span class="c-gray b">[ Draft <span class="n hv" data-opens="url" title="누르면 브라우저(PR 페이지)">repo-c#88</span> ]</span>
+</span>
+</div>
+<div class="band-row">
+<span class="band-label c-sky">* Team PR</span>
+<span class="band-items">
+<span class="c-yellow b">[ Re-review <span class="n hv" data-opens="session" title="누르면 Claude 세션(리뷰 세션 탭·작업하던 탭)">repo-c#87</span> ]</span>
+<span class="c-blue b">[ Needs review <span class="n hv" data-opens="session" title="누르면 Claude 세션(리뷰 세션 탭·작업하던 탭)">repo-a#1235</span> <span class="n hv" data-opens="url" title="누르면 브라우저(PR 페이지)">repo-b#561</span> ]</span>
+<span class="c-gray b">[ Awaiting changes <span class="n hv" data-opens="session" title="누르면 Claude 세션(리뷰 세션 탭·작업하던 탭)">repo-b#560</span> ]</span>
+</span>
+</div>
+<div class="band-row">
+<span class="band-label c-violet">* This PR</span>
+<span class="band-items">
+<span class="c-blue b hv" data-opens="url" title="누르면 브라우저(PR 페이지)">[ Needs review ]</span>
+<span class="c-ink u hv" data-opens="url" title="누르면 브라우저(PR 페이지)">feat: 결제 완료 화면 안내 문구 수정 (#1235)</span>
+<span class="b hv jira c-jira" title="누르면 브라우저(Jira 이슈)">[ SHOP-482 ]</span>
+<span class="c-ink hv" data-opens="url" title="누르면 리뷰 md 파일">리뷰 파일</span>
+</span>
+</div>
+<div class="prompt">❯ </div>
+</div>
+<p class="band-hint">버튼과 PR 번호에 마우스를 올리면 실제 띠처럼 그 색이 배경으로 깔린다. <strong style="color:#d97757">주황</strong>은 Claude 세션, <strong>흰색</strong>은 브라우저로 열린다는 뜻이다.</p>
 
 세 레포의 PR이 한 줄에 섞이기 때문에 PR 번호 앞에 레포 이름을 붙인다(<code>repo-a#1234</code>). 마지막 줄은 지금 Claude Code 세션이 연결된 PR이다. 리뷰 탭이나 PR 브랜치에서 연 세션일 때만 나타난다.
 첫 줄 <code>* Skills</code>는 자주 쓰는 개인 스킬 숏컷 버튼이라 이 글에서는 다루지 않는다. 그 줄 끝의 <code>↻ 12:15</code>는 마지막으로 상태를 가져온 시각이자 새로고침 버튼이다. Skills 줄은 PR이 없어도 항상 떠 있어서 버튼을 거기 붙였다.
